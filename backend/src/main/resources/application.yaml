@@ -1,11 +1,17 @@
 spring:
   application:
     name: estudioBDD
-  database:
-    url: jdbc:mysql://localhost:3306/estudio_bdd
-    username: root
-    password: root
-    driver-class-name: com.postgresql.cj.jdbc.Driver
-
-
+  datasource:
+    url: jdbc:postgresql://db.mtikbxdvxudqdncyzuel.supabase.co:5432/postgres
+    username: postgres
+    password: 4tevwJCY2NTYBq0o
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      #Cria as tabelas quando a aplicação inicia.
+      #Remove as tabelas quando a aplicação é encerrada.
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 

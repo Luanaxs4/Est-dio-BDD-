@@ -1,6 +1,8 @@
 package br.com.projeto.estudioBDD.database.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -23,11 +25,18 @@ public class Passo {
     @GeneratedValue (strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    /*@Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoPasso tipo; */
     private String tipo;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String texto;
+    
+    @Column(nullable = false)
     private int posicao;
     
-    @ManyToOne
-    @JoinColumn(name = "cenario_id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "cenario_id", nullable = false)
     private Cenario cenario;
 }
