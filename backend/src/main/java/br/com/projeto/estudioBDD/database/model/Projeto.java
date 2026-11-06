@@ -1,11 +1,15 @@
 package br.com.projeto.estudioBDD.database.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -38,6 +42,9 @@ public class Projeto {
 
     @Column (name = "data_criacao", nullable = false, updatable = false)
     private LocalDate dataCriacao;
+
+    @OneToMany(mappedBy = "projeto")
+    private Set<HistoriaUsuario> historiasUsuarios = new HashSet<>();
 
     @PrePersist
     void aoCriar() {

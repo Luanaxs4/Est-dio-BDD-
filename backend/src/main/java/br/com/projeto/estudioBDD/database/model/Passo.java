@@ -1,7 +1,10 @@
 package br.com.projeto.estudioBDD.database.model;
 
+import br.com.projeto.estudioBDD.database.model.enums.TipoPasso;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
@@ -25,10 +28,9 @@ public class Passo {
     @GeneratedValue (strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    /*@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TipoPasso tipo; */
-    private String tipo;
+    private TipoPasso tipo; 
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String texto;

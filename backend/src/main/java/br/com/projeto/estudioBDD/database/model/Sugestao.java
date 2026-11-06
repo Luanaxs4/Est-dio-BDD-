@@ -1,8 +1,13 @@
 package br.com.projeto.estudioBDD.database.model;
 
 import java.time.LocalDate;
+
+import br.com.projeto.estudioBDD.database.model.enums.DecisaoSugestao;
+import br.com.projeto.estudioBDD.database.model.enums.MotivoRejeicao;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,17 +41,14 @@ public class Sugestao {
     @Column (columnDefinition = "TEXT", nullable = false)
     private String conteudo;
 
-    /*@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
     private DecisaoSugestao decisao = DecisaoSugestao.PENDENTE;
-     */
-    private String decisao;
-    /*@Enumerated(EnumType.STRING)
+     
+    @Enumerated(EnumType.STRING)
     @Column(name = "motivo_rejeicao")
-    private MotivoRejeicao motivoRejeicao; */
-    @Column (name = "motivo_rejeicao")
-    private String motivoRejeicao;
+    private MotivoRejeicao motivoRejeicao; 
 
     @Column(columnDefinition = "TEXT")
     private String justificativa;

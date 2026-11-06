@@ -3,6 +3,7 @@ package br.com.projeto.estudioBDD.database.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.projeto.estudioBDD.database.model.enums.OrigemCenario;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,12 +44,10 @@ public class Cenario {
     @Column(nullable = false)
     private int posicao;
 
-    /*@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private OrigemCenario origem = OrigemCenario.HUMANO;*/
-    
-    private String origem;
+    private OrigemCenario origem = OrigemCenario.HUMANO;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "historia_usuario_id", nullable = false)

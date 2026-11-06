@@ -2,16 +2,16 @@ spring:
   application:
     name: estudioBDD
   datasource:
-    url: jdbc:postgresql://db.mtikbxdvxudqdncyzuel.supabase.co:5432/postgres
-    username: postgres
-    password: 4tevwJCY2NTYBq0o
+    # URL para a base de dados local na porta padrão 5432
+    url: 
+    username: 
+    password: 
+    driver-class-name: org.postgresql.Driver
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create-drop
-      #Cria as tabelas quando a aplicação inicia.
-      #Remove as tabelas quando a aplicação é encerrada.
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-

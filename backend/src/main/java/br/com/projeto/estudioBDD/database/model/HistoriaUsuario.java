@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.projeto.estudioBDD.database.model.enums.Prioridade;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,9 +53,9 @@ public class HistoriaUsuario {
     @Column(nullable = false)
     private String beneficio;  // para...
 
-    /*@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Prioridade prioridade;*/
+    private Prioridade prioridade;
 
     @Column(name = "data_criacao", nullable = false, updatable = false)
     private LocalDate dataCriacao;
@@ -70,14 +71,14 @@ public class HistoriaUsuario {
     @JoinColumn(name = "projeto_id", nullable = false)
     private Projeto projeto;
 
-    /*@OneToMany(mappedBy = "historiaUsuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "historiaUsuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("posicao ASC")
     @Builder.Default
     private List<Cenario> cenarios = new ArrayList<>();
 
     @OneToMany(mappedBy = "historiaUsuario", cascade = CascadeType.REMOVE)
     @Builder.Default
-    private List<Sugestao> sugestoes = new ArrayList<>();*/
+    private List<Sugestao> sugestoes = new ArrayList<>();
 
     @PrePersist
     void aoCriar() {
