@@ -1,0 +1,1 @@
+public record UsuarioDTO(String nome, String email){}
