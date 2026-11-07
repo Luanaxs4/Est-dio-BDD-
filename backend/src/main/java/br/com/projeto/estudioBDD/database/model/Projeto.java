@@ -1,15 +1,11 @@
 package br.com.projeto.estudioBDD.database.model;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -19,39 +15,32 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter 
+@Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder 
+@Builder
 @Table(name = "projeto")
 public class Projeto {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column (nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String nome;
 
-    @Column (columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String descricao;
-    
-    @Column (columnDefinition = "TEXT", name = "contexto_dominio")
+
+    // glossário e informações do negócio
+    @Column(name = "contexto_dominio", columnDefinition = "TEXT")
     private String contextoDominio;
-    
 
-    @Column (name = "data_criacao", nullable = false, updatable = false)
+    @Column(name = "data_criacao", nullable = false, updatable = false)
     private LocalDate dataCriacao;
-
-    @OneToMany(mappedBy = "projeto")
-    private Set<HistoriaUsuario> historiasUsuarios = new HashSet<>();
 
     @PrePersist
     void aoCriar() {
         if (dataCriacao == null) dataCriacao = LocalDate.now();
     }
-
-
-
-    
 }
