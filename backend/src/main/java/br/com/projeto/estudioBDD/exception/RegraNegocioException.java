@@ -30,6 +30,6 @@ public class RegraNegocioException extends RuntimeException {
 
     /** 422 - regra de negócio violada */
     public static RegraNegocioException regra(String mensagem) {
-        return new RegraNegocioException(HttpStatus.UNPROCESSABLE_ENTITY, mensagem);
+        return new RegraNegocioException(HttpStatus.UNPROCESSABLE_CONTENT, mensagem);
     }
 }

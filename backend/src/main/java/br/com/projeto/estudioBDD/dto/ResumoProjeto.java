@@ -1,6 +1,5 @@
 package br.com.projeto.estudioBDD.dto;
 
-import java.util.List;
 import java.util.Map;
 import br.com.projeto.estudioBDD.database.model.enums.*;
 

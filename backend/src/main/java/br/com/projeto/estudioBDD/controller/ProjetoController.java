@@ -29,7 +29,7 @@ public class ProjetoController {
     }
 
     @GetMapping
-    public List<ProjetoDTO  .Response> listar() {
+    public List<ProjetoDTO.Response> listar() {
         return service.listar();
     }
 
