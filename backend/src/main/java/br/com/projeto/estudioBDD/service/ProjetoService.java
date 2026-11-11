@@ -61,9 +61,12 @@ public class ProjetoService {
         sugestaoRepository.contarPorDecisao(id)
                 .forEach(l -> porDecisao.put((DecisaoSugestao) l[0], (Long) l[1]));
 
-        List<ResumoProjeto.MotivoContagem> motivos = sugestaoRepository.contarMotivosRejeicao(id).stream()
-                .map(l -> new ResumoProjeto.MotivoContagem((MotivoRejeicao) l[0], (Long) l[1]))
-                .toList();
+        Map<MotivoRejeicao, Long> motivos =
+        new EnumMap<>(MotivoRejeicao.class);
+        for (MotivoRejeicao m : MotivoRejeicao.values()) motivos.put(m, 0L);
+        sugestaoRepository.contarMotivosRejeicao(id)
+                .forEach(l -> motivos.put((MotivoRejeicao) l[0],(Long) l[1]
+        ));
 
         return new ResumoProjeto(projeto.getId(), projeto.getNome(),
                 historiaRepository.countByProjetoId(id), porOrigem, porDecisao, motivos);
