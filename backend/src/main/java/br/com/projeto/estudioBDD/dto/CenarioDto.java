@@ -11,24 +11,23 @@ import jakarta.validation.constraints.NotNull;
 
 public final class CenarioDto {
     private CenarioDto() {}
-
+ 
     public record PassoRequest(
             @NotNull(message = "O tipo do passo é obrigatório") TipoPasso tipo,
             @NotBlank(message = "O texto do passo é obrigatório") String texto) {}
-
+ 
     /** origem é opcional: se não vier, assume HUMANO. */
     public record Request(
             @NotBlank(message = "O título é obrigatório") String titulo,
-            @NotNull(message = "A posição é obrigatória") int posicao,
             OrigemCenario origem,
             @NotEmpty(message = "O cenário precisa ter passos") List<@Valid PassoRequest> passos) {}
-
+ 
     public record PassoResponse(Long id, TipoPasso tipo, String texto, int posicao) {
         public static PassoResponse from(Passo p) {
             return new PassoResponse(p.getId(), p.getTipo(), p.getTexto(), p.getPosicao());
         }
     }
-
+ 
     public record Response(Long id, String titulo, int posicao, OrigemCenario origem,
                            List<PassoResponse> passos) {
         public static Response from(Cenario c) {
