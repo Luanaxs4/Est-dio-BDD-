@@ -19,6 +19,7 @@ public final class CenarioDto {
     /** origem é opcional: se não vier, assume HUMANO. */
     public record Request(
             @NotBlank(message = "O título é obrigatório") String titulo,
+            @NotNull(message = "A posição é obrigatória") int posicao,
             OrigemCenario origem,
             @NotEmpty(message = "O cenário precisa ter passos") List<@Valid PassoRequest> passos) {}
 

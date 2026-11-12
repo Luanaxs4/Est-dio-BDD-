@@ -76,4 +76,21 @@ public class ProjetoService {
         return repository.findById(id)
                 .orElseThrow(() -> RegraNegocioException.naoEncontrado("Projeto " + id + " não encontrado."));
     }
+
+    public ProjetoDTO.Response atualizar(Long id, ProjetoDTO.Request req){
+        Projeto projeto = obterEntidade(id);
+        String nome = req.nome().trim();
+        if (!projeto.getNome().equals(nome) && repository.existsByNome(nome)) {
+            throw RegraNegocioException.conflito("Já existe um projeto com este nome.");
+        }
+        projeto.setNome(nome);
+        projeto.setDescricao(req.descricao());
+        projeto.setContextoDominio(req.contextoDominio());
+        return ProjetoDTO.Response.from(repository.save(projeto));
+    }
+
+    public void deletar(Long id) {
+        Projeto projeto = obterEntidade(id);
+        repository.delete(projeto);
+    }
 }

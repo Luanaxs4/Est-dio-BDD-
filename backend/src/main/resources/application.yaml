@@ -2,8 +2,7 @@ spring:
   application:
     name: estudioBDD
   datasource:
-    # URL para a base de dados local na porta padrão 5432
-    url: 
+    url:
     username: 
     password: 
     driver-class-name: org.postgresql.Driver

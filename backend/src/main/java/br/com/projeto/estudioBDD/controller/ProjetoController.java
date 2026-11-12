@@ -2,9 +2,11 @@ package br.com.projeto.estudioBDD.controller;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,5 +43,15 @@ public class ProjetoController {
     @GetMapping("/{id}/resumo")
     public ResumoProjeto resumo(@PathVariable Long id) {
         return service.resumo(id);
+    }
+
+    @PutMapping("/{id}")
+    public ProjetoDTO.Response atualizar(@PathVariable Long id, @Valid @RequestBody ProjetoDTO.Request req) {
+        return service.atualizar(id, req);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletar(@PathVariable Long id) {
+        service.deletar(id);
     }
 }

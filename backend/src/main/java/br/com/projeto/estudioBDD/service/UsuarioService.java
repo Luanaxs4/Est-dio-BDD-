@@ -43,4 +43,6 @@ public class UsuarioService {
         return repository.findById(id)
                 .orElseThrow(() -> RegraNegocioException.naoEncontrado("Usuário " + id + " não encontrado."));
     }
+
+   
 }
