@@ -69,7 +69,7 @@ public class CenarioService {
         cenario.getPassos().clear();
         montarPassos(cenario, req.passos());
         historia.setDataAtualizacao(LocalDate.now());
-        repository.flush(); // garante que o cenário seja atualizado antes de retornar
+        repository.save(cenario); // garante que o cenário seja atualizado antes de retornar
         return CenarioDto.Response.from(cenario);
     }
 
