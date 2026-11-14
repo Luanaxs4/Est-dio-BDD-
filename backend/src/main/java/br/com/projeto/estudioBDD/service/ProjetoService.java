@@ -89,8 +89,4 @@ public class ProjetoService {
         return ProjetoDTO.Response.from(repository.save(projeto));
     }
 
-    public void deletar(Long id) {
-        Projeto projeto = obterEntidade(id);
-        repository.delete(projeto);
-    }
 }

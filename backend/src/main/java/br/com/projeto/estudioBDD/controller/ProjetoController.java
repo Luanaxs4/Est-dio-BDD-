@@ -50,8 +50,5 @@ public class ProjetoController {
         return service.atualizar(id, req);
     }
 
-    @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
-        service.deletar(id);
-    }
+ 
 }

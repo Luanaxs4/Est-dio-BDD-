@@ -2,9 +2,9 @@ spring:
   application:
     name: estudioBDD
   datasource:
-   url: #SUA_URL_DO_BANCO
-    username: #SEU_USUARIO
-    password: #SUA_SENHA
+    url: 
+    username: 
+    password: 
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
