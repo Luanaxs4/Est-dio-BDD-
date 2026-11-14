@@ -35,7 +35,7 @@ import lombok.Setter;
        uniqueConstraints = @UniqueConstraint(columnNames = {"historia_usuario_id", "titulo"}))
 public class Cenario {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

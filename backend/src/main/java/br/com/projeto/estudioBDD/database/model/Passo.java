@@ -25,7 +25,7 @@ import lombok.Setter;
 @Builder 
 public class Passo {
     @Id 
-    @GeneratedValue (strategy = GenerationType.SEQUENCE)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)

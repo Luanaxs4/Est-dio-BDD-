@@ -29,7 +29,7 @@ import lombok.Setter;
 @Builder 
 public class Sugestao {
     @Id 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
     
     @Column (nullable = false)

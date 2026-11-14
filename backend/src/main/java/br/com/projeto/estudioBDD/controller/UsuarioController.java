@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import br.com.projeto.estudioBDD.database.repository.UsuarioRepo; // <-- Violação 1: import de repository
+//import br.com.projeto.estudioBDD.database.repository.UsuarioRepo; 
 import br.com.projeto.estudioBDD.dto.UsuarioDTO;
 import br.com.projeto.estudioBDD.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioController {
 
     private final UsuarioService service;
-    private final UsuarioRepo usuarioRepo; // <-- Violação 2: dependência direta no atributo/construtor
+   // private final UsuarioRepo usuarioRepo; 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -39,9 +39,9 @@ public class UsuarioController {
         return service.buscar(id);
     }
 
-   @GetMapping("/teste-archunit")
+ /*   @GetMapping("/teste-archunit")
    public long testarViolacao() {
-    return usuarioRepo.count(); // <-- Violação 3: chamada direta de método do repository
+    return usuarioRepo.count();
 
-    }
+    }*/
 }
