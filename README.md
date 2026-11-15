@@ -154,7 +154,7 @@ app:
     ativo: true
 ```
 
-Depois que os dados estiverem no banco, volte para `ativo: false`. A carga **não duplica**: se o projeto já tem histórias, ele é ignorado.
+Depois que os dados estiverem no banco, altere para `ativo: false`. A carga **não duplica**: se o projeto já tem histórias, ele é ignorado.
 
 ### Usuários
 
@@ -186,13 +186,6 @@ Depois que os dados estiverem no banco, volte para `ativo: false`. A carga **nã
 | 8 | Estoque de Crochê | Alerta de estoque baixo | BAIXA | Carla | 2 | nenhuma |
 
 > Os ids acima valem para um banco vazio (ids em ordem de criação).
-
-**Resultados esperados para conferência:**
-
-- `GET /api/projetos/1/historias?prioridade=ALTA` retorna 2 histórias; `MEDIA`, 2; `BAIXA`, 1.
-- `GET /api/projetos/1/resumo`: 5 histórias; cenários 15 `HUMANO` e 1 `SUGESTAO_IA`; sugestões 3 `PENDENTE`, 1 `ACEITA` e 4 `REJEITADA`.
-- Exportação `.feature` funciona para as histórias **1, 4, 5, 7 e 8** e retorna **422** para **2, 3 e 6** (sugestões pendentes).
-
 
 ---
 
@@ -306,6 +299,7 @@ Base: `http://localhost:8080`. Corpo e respostas em JSON (`Content-Type: applica
 | GET | `/api/historias/{historiaId}/sugestoes` | | Lista sugestões; filtro `?decisao=` | 200 |
 | PUT | `/api/sugestoes/{id}/decisao` | `X-Usuario-Id` | Aceita ou rejeita a sugestão | 200 |
 
+Para mais informações, consulte a pasta [Documentação](./documentação).
 ---
 
 ### Regras de negócio

@@ -72,7 +72,7 @@ Registro das interações relevantes com ferramentas de IA ao longo do projeto. 
 
 **Decisão do grupo:** Aceitou a proposta.
 
-**Mudanças:** Adicionou a classe `CarregadorDadosFicticios` na pasta `config`, a propriedade `app.seed.ativo` no `application.yml` e atualizou o `pom.xml`.
+**Mudanças:** Adicionou a classe `CarregadorDadosFicticios` na pasta `config`, a propriedade `app.seed.ativo` no `application.yml`.
 
 **Verificação:** ao subir com `app.seed.ativo: true`, o log confirma a carga e `GET /api/projetos` lista os projetos criados.
 

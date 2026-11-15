@@ -16,4 +16,4 @@ spring:
         format_sql: true
 app:
   seed:
-    ativo: false #gerenciar garregador de dados ficticios
+    ativo: true
