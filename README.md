@@ -24,6 +24,11 @@ Projeto da disciplina **Programação de Sistemas II** · Projeto 2026/2.
 - PostgreSQL
 - JUnit 5, Mockito e ArchUnit (testes)
 - Maven
+- React
+- Typescript
+- Vite (build)
+- React Router
+- CSS3
 
 ## Estrutura da API
 
@@ -42,7 +47,26 @@ br.com.projeto.estudioBDD
 
 Regra de arquitetura (verificada com ArchUnit): **controllers não acessam repositories**.
 
+## Estrutura do SPA (Frontend)
+
+```
+frontend/src
+├── assets            recursos estáticos e mídias da interface
+├── components        componentes reutilizáveis de UI (ex.: ModalAviso, cabeçalho e badges)
+├── contexts          gerenciamento de estado global e sessão do usuário (usuarioContext)
+├── pages             telas principais e fluxos de navegação (Login, Projetos, Detalhes e Estúdio)
+├── services          camada de comunicação HTTP com os endpoints REST da API
+├── types             interfaces e tipagens TypeScript dos modelos de requisição e resposta
+├── App.tsx           configuração das rotas e estrutura base da aplicação
+├── App.css           estilos globais dos componentes e layouts da aplicação
+├── main.tsx          ponto de entrada que inicializa o React no DOM
+└── index.css         redefinições e variáveis de estilo base
+```
+
+Regra de arquitetura (separação de responsabilidades): **pages e components não realizam chamadas HTTP diretas — toda comunicação com a API passa pela camada de `services`**.
+
 ---
+
 
 ## Como executar
 
@@ -51,6 +75,7 @@ Regra de arquitetura (verificada com ArchUnit): **controllers não acessam repos
 - JDK 17+
 - Maven 3.9+ (ou o `mvnw` do projeto)
 - O banco utilizado foi o PostgreSQL 14+
+- Node.js 18+ e npm (para executar o SPA)
 
 ### 1. Subir o banco de dados
 
@@ -104,6 +129,18 @@ Executa o teste de arquitetura (ArchUnit) e os testes das regras de negócio:
 - rejeição de sugestão **sem motivo** é recusada;
 - exportação **bloqueada** com sugestão pendente;
 - **controllers não acessam repositories**.
+
+### 5. Rodar o SPA (Frontend)
+
+Com a API em execução na porta `8080`, acesse a pasta `frontend`, instale as dependências e inicie o servidor de desenvolvimento:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+A aplicação web sobe em `http://localhost:5173`.
 
 ---
 
@@ -283,3 +320,15 @@ Base: `http://localhost:8080`. Corpo e respostas em JSON (`Content-Type: applica
 | 6. Consulta lista histórias com a quantidade de cenários e de sugestões pendentes, com filtro por prioridade | `HistoriaService` + `HistoriaUsuarioRepository` |
 | 7. Resumo do projeto: histórias, cenários por origem, sugestões por decisão e motivos de rejeição mais frequentes | `ProjetoService` |
 
+---
+
+## Rotas e funcionalidades do SPA
+
+Base: `http://localhost:5173`.
+
+| Rota | Página | Funcionalidades principais |
+|---|---|---|
+| `/` | `LoginPage` | Fluxo unificado de acesso e cadastro rápido por e-mail, com sincronização da sessão ativa (`X-Usuario-Id`) no cabeçalho |
+| `/projetos` | `ProjetosPage` | Listagem de projetos e criação via modal com nome, descrição e contexto do domínio/glossário |
+| `/projetos/:projetoId` | `ProjetoDetalhesPage` | Visualização e edição inline dos dados e glossário do projeto, resumo quantitativo (histórias, cenários e sugestões), filtro por prioridade e cadastro de histórias |
+| `/projetos/:projetoId/historias/:historiaId` | `EstudioHistoriaPage` | Edição/exclusão da história e gerenciamento de cenários BDD (restritos ao autor), registro e decisão de sugestões de IA (aceite ou rejeição com motivo) e download do arquivo `.feature` |
