@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ModalAviso } from '../components/ModalAviso';
 import { useUsuario } from '../contexts/usuarioContext';
 import { usuarioService } from '../services/usuarioService';
 import { extrairMensagemErro } from '../types/api';
@@ -67,19 +68,12 @@ export function LoginPage() {
         </p>
       </div>
 
-      {erro && (
-        <div
-          style={{
-            padding: '0.75rem 1rem',
-            backgroundColor: '#fee2e2',
-            color: '#991b1b',
-            borderRadius: '6px',
-            marginBottom: '1rem',
-          }}
-        >
-          {erro}
-        </div>
-      )}
+      <ModalAviso
+        aberto={erro !== null}
+        titulo="Erro"
+        mensagem={erro ?? ''}
+        onFechar={() => setErro(null)}
+      />
 
       <section
         style={{

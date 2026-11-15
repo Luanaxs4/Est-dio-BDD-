@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ModalAviso } from '../components/ModalAviso';
 import { ModalFeature } from '../components/ModalFeature';
 import { useUsuario } from '../contexts/usuarioContext';
 import { cenarioService } from '../services/cenarioService';
@@ -23,6 +24,13 @@ export function EstudioHistoriaPage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [sucesso, setSucesso] = useState<string | null>(null);
+
+  // Modal de confirmação (substitui window.confirm)
+  const [confirmacao, setConfirmacao] = useState<{
+    titulo: string;
+    mensagem: string;
+    onConfirmar?: () => void;
+  } | null>(null);
 
   // Modal .feature
   const [arquivoExportado, setArquivoExportado] = useState<ArquivoFeature | null>(null);
@@ -112,15 +120,20 @@ export function EstudioHistoriaPage() {
     }
   };
 
-  const handleExcluirHistoria = async () => {
-    if (!window.confirm('Tem certeza que deseja excluir esta história e todos os seus cenários?')) return;
-    try {
-      setErro(null);
-      await historiaService.excluir(idHistoria);
-      navigate(`/projetos/${idProjeto}`);
-    } catch (err) {
-      setErro(extrairMensagemErro(err));
-    }
+  const handleExcluirHistoria = () => {
+    setConfirmacao({
+      titulo: 'Excluir História',
+      mensagem: 'Tem certeza que deseja excluir esta história e todos os seus cenários?',
+      onConfirmar: async () => {
+        try {
+          setErro(null);
+          await historiaService.excluir(idHistoria);
+          navigate(`/projetos/${idProjeto}`);
+        } catch (err) {
+          setErro(extrairMensagemErro(err));
+        }
+      },
+    });
   };
 
   const handleExportarFeature = async () => {
@@ -202,16 +215,21 @@ export function EstudioHistoriaPage() {
     }
   };
 
-  const handleExcluirCenario = async (cenarioId: number) => {
-    if (!window.confirm('Excluir este cenário?')) return;
-    try {
-      setErro(null);
-      await cenarioService.excluir(cenarioId);
-      exibirMensagemSucesso('Cenário excluído.');
-      await carregarTudo();
-    } catch (err) {
-      setErro(extrairMensagemErro(err));
-    }
+  const handleExcluirCenario = (cenarioId: number) => {
+    setConfirmacao({
+      titulo: 'Excluir Cenário',
+      mensagem: 'Tem certeza que deseja excluir este cenário?',
+      onConfirmar: async () => {
+        try {
+          setErro(null);
+          await cenarioService.excluir(cenarioId);
+          exibirMensagemSucesso('Cenário excluído.');
+          await carregarTudo();
+        } catch (err) {
+          setErro(extrairMensagemErro(err));
+        }
+      },
+    });
   };
 
   // --- AÇÕES DE SUGESTÕES DE IA ---
@@ -276,19 +294,29 @@ export function EstudioHistoriaPage() {
         <button
           type="button"
           className="btn-primary"
-          style={{ width: 'auto', backgroundColor: '#0f172a',color:'#ffffff'}}
+          style={{ width: 'auto', backgroundColor: '#0f172a', color: '#ffffff' }}
           onClick={handleExportarFeature}
         >
           📄 Exportar .feature
         </button>
       </div>
 
-      {/* Alertas de Erro (ProblemDetail) ou Sucesso */}
-      {erro && (
-        <div style={{ padding: '0.85rem 1rem', backgroundColor: '#fef2e2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', marginBottom: '1.25rem', fontWeight: 500 }}>
-          ⚠️ {erro}
-        </div>
-      )}
+      {/* Modais de Erro e Confirmação */}
+      <ModalAviso
+        aberto={erro !== null}
+        titulo="Erro"
+        mensagem={erro ?? ''}
+        onFechar={() => setErro(null)}
+      />
+
+      <ModalAviso
+        aberto={confirmacao !== null}
+        titulo={confirmacao?.titulo ?? 'Confirmar'}
+        mensagem={confirmacao?.mensagem ?? ''}
+        onFechar={() => setConfirmacao(null)}
+        onConfirmar={confirmacao?.onConfirmar ?? (() => {})}
+        textoConfirmar="Excluir"
+      />
 
       {sucesso && (
         <div style={{ padding: '0.85rem 1rem', backgroundColor: '#dcfce7', border: '1px solid #86efac', color: '#166534', borderRadius: '8px', marginBottom: '1.25rem', fontWeight: 500 }}>
@@ -371,13 +399,15 @@ export function EstudioHistoriaPage() {
           <section className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h2 style={{ fontSize: '1.15rem' }}>Cenários BDD ({historia?.cenarios.length ?? 0})</h2>
-              <button type="button" className="btn-primary" style={{ width: 'auto' }} onClick={abrirNovoCenario}>
-                + Novo Cenário
-              </button>
+              {ehAutor && (
+                <button type="button" className="btn-primary" style={{ width: 'auto' }} onClick={abrirNovoCenario}>
+                  + Novo Cenário
+                </button>
+              )}
             </div>
 
             {/* Formulário de Cenário e Passos Ordenados */}
-            {mostrarFormCenario && (
+            {ehAutor && mostrarFormCenario && (
               <form
                 onSubmit={handleSalvarCenario}
                 style={{ backgroundColor: '#f8fafc', padding: '1.15rem', borderRadius: '8px', border: '1px solid #93c5fd', marginBottom: '1.25rem', display: 'grid', gap: '0.9rem' }}

@@ -2,18 +2,18 @@ spring:
   application:
     name: estudioBDD
   datasource:
-    url: 
-    username: 
-    password: 
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 12345
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop #create-drop starta e cria, finaliza e apaga / update: se tiver tabela n faz nada, se não atualiza (persiste)
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 app:
   seed:
-    ativo: true
+    ativo: true #gerenciar garregador de dados ficticios

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ModalAviso } from '../components/ModalAviso';
 
 interface Projeto {
   id: number;
@@ -12,6 +13,7 @@ export function ProjetosPage() {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [modalAberto, setModalAberto] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -32,6 +34,7 @@ export function ProjetosPage() {
       }
     } catch (error) {
       console.error('Erro ao buscar projetos:', error);
+      setErro('Erro ao carregar projetos. Verifique se o backend está rodando.');
     } finally {
       setCarregando(false);
     }
@@ -50,7 +53,18 @@ export function ProjetosPage() {
 
   const handleCriarProjeto = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nome.trim()) return;
+    const nomeLimpo = nome.trim();
+    if (!nomeLimpo) return;
+
+    // Verifica se já existe um projeto com o mesmo nome antes de chamar a API
+    const nomeDuplicado = projetos.some(
+      (projeto) => projeto.nome.trim().toLowerCase() === nomeLimpo.toLowerCase()
+    );
+
+    if (nomeDuplicado) {
+      setErro('Já existe um projeto cadastrado com este nome. Escolha outro nome.');
+      return;
+    }
 
     setSalvando(true);
     try {
@@ -58,14 +72,14 @@ export function ProjetosPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nome,
+          nome: nomeLimpo,
           descricao,
           contextoDominio,
         }),
       });
 
       if (response.status === 409) {
-        alert('Já existe um projeto cadastrado com este nome. Escolha outro nome.');
+        setErro('Já existe um projeto cadastrado com este nome. Escolha outro nome.');
         return;
       }
 
@@ -77,7 +91,7 @@ export function ProjetosPage() {
       await carregarProjetos();
     } catch (error) {
       console.error(error);
-      alert('Erro ao salvar o projeto. Verifique o console e se o backend está rodando.');
+      setErro('Erro ao salvar o projeto. Verifique o console e se o backend está rodando.');
     } finally {
       setSalvando(false);
     }
@@ -85,6 +99,13 @@ export function ProjetosPage() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
+      <ModalAviso
+        aberto={erro !== null}
+        titulo="Erro"
+        mensagem={erro ?? ''}
+        onFechar={() => setErro(null)}
+      />
+
       {/* Cabeçalho com Título + Botão */}
       <div
         style={{

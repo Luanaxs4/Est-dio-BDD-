@@ -21,5 +21,8 @@ export const projetoService = {
   obterResumo: async (id: number): Promise<ResumoProjeto> => {
     const response = await api.get<ResumoProjeto>(`/projetos/${id}/resumo`);
     return response.data;
-  }
+  },
+
+  atualizar: (id: number, dados: { nome: string; descricao?: string; contextoDominio?: string }) =>
+  api.put<ProjetoResponse>(`/projetos/${id}`, dados),
 };

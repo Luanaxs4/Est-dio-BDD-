@@ -1,11 +1,11 @@
 import { useEffect, useState, type SubmitEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { ModalAviso } from '../components/ModalAviso';
 import { historiaService } from '../services/historiaService';
 import { projetoService } from '../services/projetoService';
 import { extrairMensagemErro } from '../types/api';
 import type { Prioridade } from '../types/historia';
-import type { HistoriaResumo,} from '../types/historiaResumo';
-
+import type { HistoriaResumo } from '../types/historiaResumo';
 import type { ProjetoResponse } from '../types/projeto';
 import type { ResumoProjeto } from '../types/resumoProjeto';
 
@@ -21,6 +21,14 @@ export function ProjetoDetalhesPage() {
   const [filtroPrioridade, setFiltroPrioridade] = useState<Prioridade | ''>('');
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+  const [sucesso, setSucesso] = useState<string | null>(null);
+
+  // Estados de edição do projeto
+  const [editandoProjeto, setEditandoProjeto] = useState(false);
+  const [nomeProjeto, setNomeProjeto] = useState('');
+  const [descricaoProjeto, setDescricaoProjeto] = useState('');
+  const [contextoDominioProjeto, setContextoDominioProjeto] = useState('');
+  const [salvandoProjeto, setSalvandoProjeto] = useState(false);
 
   // Estados do formulário de nova história
   const [mostrarFormHistoria, setMostrarFormHistoria] = useState(false);
@@ -41,6 +49,10 @@ export function ProjetoDetalhesPage() {
       ]);
       setProjeto(dadosProjeto);
       setResumo(dadosResumo);
+
+      setNomeProjeto(dadosProjeto.nome);
+      setDescricaoProjeto(dadosProjeto.descricao ?? '');
+      setContextoDominioProjeto(dadosProjeto.contextoDominio ?? '');
     } catch (err) {
       setErro(extrairMensagemErro(err));
     } finally {
@@ -68,6 +80,31 @@ export function ProjetoDetalhesPage() {
       carregarHistorias(filtroPrioridade || undefined);
     }
   }, [idProjeto, filtroPrioridade]);
+
+  const exibirMensagemSucesso = (msg: string) => {
+    setSucesso(msg);
+    setTimeout(() => setSucesso(null), 3500);
+  };
+
+  const handleSalvarProjeto = async (e: SubmitEvent) => {
+    e.preventDefault();
+    try {
+      setSalvandoProjeto(true);
+      setErro(null);
+      await projetoService.atualizar(idProjeto, {
+        nome: nomeProjeto,
+        descricao: descricaoProjeto,
+        contextoDominio: contextoDominioProjeto,
+      });
+      setEditandoProjeto(false);
+      exibirMensagemSucesso('Projeto atualizado com sucesso!');
+      await carregarDadosProjeto();
+    } catch (err) {
+      setErro(extrairMensagemErro(err));
+    } finally {
+      setSalvandoProjeto(false);
+    }
+  };
 
   const handleCriarHistoria = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -104,6 +141,20 @@ export function ProjetoDetalhesPage() {
     return <p>Carregando detalhes do projeto...</p>;
   }
 
+  // Normaliza motivosRejeicaoMaisFrequentes (aceita tanto Array quanto Objeto/Map)
+  const motivosRejeicaoLista: { motivo: string; quantidade: number }[] = (() => {
+    const raw = resumo?.motivosRejeicaoMaisFrequentes as unknown;
+    if (!raw) return [];
+    if (Array.isArray(raw)) return raw;
+    if (typeof raw === 'object') {
+      return Object.entries(raw as Record<string, number>).map(([motivo, quantidade]) => ({
+        motivo,
+        quantidade: Number(quantidade) || 0,
+      }));
+    }
+    return [];
+  })();
+
   return (
     <div>
       {/* Navegação de volta */}
@@ -113,9 +164,16 @@ export function ProjetoDetalhesPage() {
         </Link>
       </div>
 
-      {erro && (
-        <div style={{ padding: '0.85rem 1rem', backgroundColor: '#fef2e2', border: '1px solid #fecaca', color: '#991b1b', borderRadius: '8px', marginBottom: '1rem' }}>
-          {erro}
+      <ModalAviso
+        aberto={erro !== null}
+        titulo="Erro"
+        mensagem={erro ?? ''}
+        onFechar={() => setErro(null)}
+      />
+
+      {sucesso && (
+        <div style={{ padding: '0.85rem 1rem', backgroundColor: '#dcfce7', border: '1px solid #86efac', color: '#166534', borderRadius: '8px', marginBottom: '1rem', fontWeight: 500 }}>
+          ✓ {sucesso}
         </div>
       )}
 
@@ -125,20 +183,81 @@ export function ProjetoDetalhesPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
             <div>
               <h1 style={{ fontSize: '1.6rem', marginBottom: '0.35rem' }}>{projeto.nome}</h1>
-              {projeto.descricao && <p style={{ color: '#475569' }}>{projeto.descricao}</p>}
+              {!editandoProjeto && projeto.descricao && <p style={{ color: '#475569' }}>{projeto.descricao}</p>}
             </div>
-            <small style={{ color: '#64748b' }}>Criado em {projeto.dataCriacao}</small>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <small style={{ color: '#64748b' }}>Criado em {projeto.dataCriacao}</small>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ width: 'auto', padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
+                onClick={() => {
+                  if (editandoProjeto) {
+                    setNomeProjeto(projeto.nome);
+                    setDescricaoProjeto(projeto.descricao ?? '');
+                    setContextoDominioProjeto(projeto.contextoDominio ?? '');
+                  }
+                  setEditandoProjeto(!editandoProjeto);
+                }}
+              >
+                {editandoProjeto ? 'Cancelar' : 'Editar Projeto'}
+              </button>
+            </div>
           </div>
 
-          {projeto.contextoDominio && (
-            <div style={{ marginTop: '1rem', padding: '0.85rem', backgroundColor: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #2563eb' }}>
-              <strong style={{ display: 'block', fontSize: '0.85rem', color: '#1e40af', marginBottom: '0.25rem' }}>
-                Contexto do Domínio / Glossário
-              </strong>
-              <p style={{ fontSize: '0.9rem', color: '#334155', whiteSpace: 'pre-wrap' }}>
-                {projeto.contextoDominio}
-              </p>
-            </div>
+          {!editandoProjeto ? (
+            projeto.contextoDominio && (
+              <div style={{ marginTop: '1rem', padding: '0.85rem', backgroundColor: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #2563eb' }}>
+                <strong style={{ display: 'block', fontSize: '0.85rem', color: '#1e40af', marginBottom: '0.25rem' }}>
+                  Contexto do Domínio / Glossário
+                </strong>
+                <p style={{ fontSize: '0.9rem', color: '#334155', whiteSpace: 'pre-wrap' }}>
+                  {projeto.contextoDominio}
+                </p>
+              </div>
+            )
+          ) : (
+            <form onSubmit={handleSalvarProjeto} style={{ display: 'grid', gap: '0.9rem', marginTop: '1rem' }}>
+              <div className="form-group">
+                <label className="form-label">Nome do Projeto *</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={nomeProjeto}
+                  onChange={(e) => setNomeProjeto(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Descrição</label>
+                <textarea
+                  rows={2}
+                  className="form-input"
+                  value={descricaoProjeto}
+                  onChange={(e) => setDescricaoProjeto(e.target.value)}
+                  placeholder="Objetivo do projeto..."
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Contexto do Domínio / Glossário</label>
+                <textarea
+                  rows={4}
+                  className="form-input"
+                  value={contextoDominioProjeto}
+                  onChange={(e) => setContextoDominioProjeto(e.target.value)}
+                  placeholder="Termos técnicos, regras gerais do negócio, glossário..."
+                />
+              </div>
+
+              <div>
+                <button type="submit" className="btn-primary" style={{ width: 'auto' }} disabled={salvandoProjeto}>
+                  {salvandoProjeto ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              </div>
+            </form>
           )}
         </section>
       )}
@@ -326,11 +445,11 @@ export function ProjetoDetalhesPage() {
             <div style={{ display: 'grid', gap: '0.4rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Humano:</span>
-                <strong>{resumo.cenariosPorOrigem.HUMANO ?? 0}</strong>
+                <strong>{resumo.cenariosPorOrigem?.HUMANO ?? 0}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Sugestão de IA:</span>
-                <strong>{resumo.cenariosPorOrigem.SUGESTAO_IA ?? 0}</strong>
+                <strong>{resumo.cenariosPorOrigem?.SUGESTAO_IA ?? 0}</strong>
               </div>
             </div>
           </div>
@@ -340,26 +459,26 @@ export function ProjetoDetalhesPage() {
             <div style={{ display: 'grid', gap: '0.4rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Pendentes:</span>
-                <strong>{resumo.sugestoesPorDecisao.PENDENTE ?? 0}</strong>
+                <strong>{resumo.sugestoesPorDecisao?.PENDENTE ?? 0}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Aceitas:</span>
-                <strong>{resumo.sugestoesPorDecisao.ACEITA ?? 0}</strong>
+                <strong>{resumo.sugestoesPorDecisao?.ACEITA ?? 0}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Rejeitadas:</span>
-                <strong>{resumo.sugestoesPorDecisao.REJEITADA ?? 0}</strong>
+                <strong>{resumo.sugestoesPorDecisao?.REJEITADA ?? 0}</strong>
               </div>
             </div>
           </div>
 
           <div className="card">
             <h3 style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '0.75rem' }}>Motivos de Rejeição Frequentes</h3>
-            {resumo.motivosRejeicaoMaisFrequentes.length === 0 ? (
+            {motivosRejeicaoLista.length === 0 ? (
               <p style={{ fontSize: '0.9rem', color: '#94a3b8' }}>Nenhuma rejeição registrada.</p>
             ) : (
               <div style={{ display: 'grid', gap: '0.4rem' }}>
-                {resumo.motivosRejeicaoMaisFrequentes.map((item) => (
+                {motivosRejeicaoLista.map((item) => (
                   <div key={item.motivo} style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>{item.motivo}:</span>
                     <strong>{item.quantidade}</strong>
